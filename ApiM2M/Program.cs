@@ -7,6 +7,7 @@ using ApiM2M.Business.Jointly.Interfaces;
 using ApiM2M.Data.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
@@ -17,9 +18,12 @@ namespace TestApiM2M
 {
     public class Program
     {
+        public static IConfiguration Configuration { get; private set; }
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            Configuration = builder.Configuration;
 
             builder.Services.AddDbContext<HealthHubContext>(o =>
                 o.UseSqlServer(builder.Configuration.GetConnectionString("HealthHubDB"),
@@ -38,12 +42,7 @@ namespace TestApiM2M
                 })
                 .AddJwtBearer(options =>
                 {
-                    // La URL dell’Authority è quella del tuo User Pool, in genere:
-                    // https://cognito-idp.{REGIONE}.amazonaws.com/{POOL_ID}
                     options.Authority = builder.Configuration["Jwt:Authority"];
-
-                    // Se vuoi validare audience in modo esplicito 
-                    // puoi impostare l’audience in base al tuo Client Id
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,

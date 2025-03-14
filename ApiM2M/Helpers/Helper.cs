@@ -2,12 +2,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TestApiM2M;
 
 namespace ApiM2M.Helpers
 {
     public class Helper
     {
-        private readonly string _secretKey = "jg7784jio94i72hj6rfbpaqtno13j60karedi56eibkq2m40t72";
         public Helper()
         {
             
@@ -20,7 +20,8 @@ namespace ApiM2M.Helpers
                     new Claim(ClaimTypes.Role, "Admin")
                 };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            var secret = Program.Configuration["Jwt:SecretKey"];
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
